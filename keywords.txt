@@ -1,0 +1,6 @@
+DualSonar	KEYWORD1
+start	KEYWORD2
+stop	KEYWORD2
+is_active	KEYWORD2
+distanceL	KEYWORD2
+distanceR	KEYWORD2
