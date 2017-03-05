@@ -1,5 +1,6 @@
 # DualSonar
 Dual sonar I2C sensor for Arduino, using two HC-SR04 ultrasonic sensors and ATtiny85 MCU (or Adafruit Trinket).
+Created by Alexander Kirillov <shurik179@gmail.com>; latest version is always available at https://github.com/shurik179/DualSonar/
 ## Rationale
 HC-SR04 are cheap and reliable ultrasonic sensors, used in many robotics projects with Arduino or similar microcontrollers. However, they have two drawbacks:
 
