@@ -10,7 +10,7 @@ HC-SR04 are cheap and reliable ultrasonic sensors, used in many robotics project
 There are some ways to mitigate these probems, such as using interrupts instead of `PulseIn` or using NewPing library which allows one to use only one pin per sensor. This project goes one step further. Namely, we combine two HC-SR04 sensors and an ATtiny85 microcontroller to create a sensor which measures distance in two directions and communicates with Arduino or another MCU using I2C protocol, all under $10. 
 You can combine several such dual sonar sensors, putting them on the same I2C bus (see below), so you can have virtually unlimited number of sonars using only 2 pins of Arduino.
 ## Materials
-- 2 HC-SR04 sensors (can be bought from a variety of sources on [Amazon](https://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords=hc-sr04), eBay, AlieExpress for as sheap as $2/piece)
+- 2 HC-SR04 sensors (can be bought from a variety of sources on [Amazon](https://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords=hc-sr04), eBay, AliExpress for as cheap as $2/piece)
 - ATtiny85 MCU ($1.24 on [DigiKey](https://www.digikey.com/product-detail/en/microchip-technology/ATTINY85-20PU/ATTINY85-20PU-ND/735469)). 
 - jumper wires, headers, small pcb
 
