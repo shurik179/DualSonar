@@ -11,7 +11,7 @@ There are some ways to mitigate these probems, such as using interrupts instead 
 You can combine several such dual sonar sensors, putting them on the same I2C bus (see below), so you can have virtually unlimited number of sonars using only 2 pins of Arduino.
 ## Materials
 - 2 HC-SR04 sensors (can be bought from a variety of sources on [Amazon](https://www.amazon.com/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords=hc-sr04), eBay, AlieExpress for as sheap as $2/piece)
-- ATtiny85 MCU ($1.24 on [DigiKey](https://www.digikey.com/product-detail/en/microchip-technology/ATTINY85-20PU/ATTINY85-20PU-ND/735469). 
+- ATtiny85 MCU ($1.24 on [DigiKey](https://www.digikey.com/product-detail/en/microchip-technology/ATTINY85-20PU/ATTINY85-20PU-ND/735469)). 
 - jumper wires, headers, small pcb
 
 To program the ATtiny, you can use a special programmer such as [SparkFun Tiny AVR Programmer](https://www.sparkfun.com/products/11801) or an Arduino Uno as described [here](https://www.hackster.io/arjun/programming-attiny85-with-arduino-uno-afb829). Alternatively, you can replace ATtiny85 by [Adafruit Trinket](https://www.adafruit.com/product/1501) (5V version). It is more expensive ($6.95), but comes with a microUSB port, so you do not need a separate programmer. If you have never used microcontrollers other than Arduino, we recommend using Trinket; Adafruit has a great tutorial on using Trinket.
@@ -46,6 +46,13 @@ To use the sensor, install `DualSonar` library (of which this file is a part). I
  
  While sensor is active, it continually measures distances and keeps the running average of last measurements using simple low-pass filter. Calling `update()` fetches these values from the sensor, after which they are available using `distanceL()`, `distanceR()` functions. Calling `stop()` stops the sensor, so it no longer emits pings; calling `start()` again restarts it.
  
- **Note:** the values returned by `distanceL(), `distanceR()` are those fetched at latest `update()` call, so you must call `update()` frequently to make sure those values are up-to-date.  
+ **Note:** the values returned by `distanceL()`, `distanceR()` are those fetched at latest `update()` call, so you must call `update()` frequently to make sure those values are up-to-date.  
 
-
+## Changing I2C address
+By default, the DualSonar sensor uses I2C address 17 (0x11). If this conflicts with another device on your I2C bus, or if you need to connect more than one DualSonar sensor, you can change the I2C address as follows:
+ 1. Before uploading the `DualSonar-slave.ino` sketch to ATtiny85, edit line 
+ ```#define I2C_SLAVE_ADDRESS 0x11 ```
+ and change the address to an I2C address of your choice
+ 2. When creating DualSonar object, provide the chosen I2C address as an argument:
+ ```DualSonar mySonar(MY_I2C_ADDRESS);```
+(replacing `MY_I2C_ADDRESS` by the chosen I2C address)
