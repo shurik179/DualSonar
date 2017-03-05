@@ -28,7 +28,9 @@ Connect the ATtiny85/Trinket to the HC-SR04's as follows:
 
     Echo pin <->ATtiny85 pin 3
 - Sensor2 (right): Trig pin <-> ATtiny85 pin 1
+    
     Echo pin <->ATtiny85 pin 4
+    
 In addition, connect GND pin of each sensor to GND of ATtiny85/Trinket, and Vcc pin of each sensor to Vcc pin of ATtiny85 (or 5V on Trinket). 
 
 The sensor is done.
