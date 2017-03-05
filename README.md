@@ -51,8 +51,12 @@ To use the sensor, install `DualSonar` library (of which this file is a part). I
 ## Changing I2C address
 By default, the DualSonar sensor uses I2C address 17 (0x11). If this conflicts with another device on your I2C bus, or if you need to connect more than one DualSonar sensor, you can change the I2C address as follows:
  1. Before uploading the `DualSonar-slave.ino` sketch to ATtiny85, edit line 
- ```#define I2C_SLAVE_ADDRESS 0x11 ```
+ ```
+ #define I2C_SLAVE_ADDRESS 0x11 
+ ```
  and change the address to an I2C address of your choice
  2. When creating DualSonar object, provide the chosen I2C address as an argument:
- ```DualSonar mySonar(MY_I2C_ADDRESS);```
+ ```
+ DualSonar mySonar(MY_I2C_ADDRESS);
+ ```
 (replacing `MY_I2C_ADDRESS` by the chosen I2C address)
