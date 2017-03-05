@@ -1,21 +1,21 @@
 /*
-  Example of DualSonar library. This library allows one to create an I2C dual sonar sensor
-  out of two HC-SR04 ultrasonic sensors and ATtiny85 (or Adafruit Trinket) microcontroller,
-  which provides the I2C interface.
-  To use this library:
-  1. Upload the script DualSonar-slave.ino, found in extras subfolder of this library,
-     to ATtiny85 or Trinket. Make sure it runs at 8 or 16 Mhz. This sketch requires TinyWireS library
-  2. Connect two HC-SR04 sensors to ATtiny85as follows: 
-     - sensor 1 (left): Trig pin to ATtiny85 #1, Echo pin to #3
-     - sensor 2 (right): Trig pin to ATtiny85 #1, Echo pin to #4
-  3. Connect ATtiny85 to your Arduino as follows:
+  DualSonar - library for using dual sonar sensor, 
+  consisting of two HC-SR04 and ATtiny85
+  See detailed info here: https://github.com/shurik179/DualSonar
+  Created by Alexander Kirillov <shurik179@gmail.com> on March 5, 2017
+  Version: 1.0, last updated on March 5, 2017
+ 
+   To use this example file:
+   1. Put together and program the ATtiny85 chip and two HC-SR04 sensors as desribed here:
+  https://github.com/shurik179/DualSonar
+   2.Connect ATtiny85 to your Arduino as follows:
      Ground to Ground, 
      ATtiny85 power to Arduino 5V  
      ATtiny85 #0 to Arduino SDA (on Uno, it is pin A4)  
      ATtiny85 #2 to Arduino SCL (on Uno, it is pin A5)
      for other Arduinos, see https://www.arduino.cc/en/Reference/Wire
-  4. Upload this sketch to Arduino
-  5. Start serial monitor at 9600 Baud
+  3. Upload this sketch to Arduino
+  4. Start serial monitor at 9600 Baud
 */
 #include <Wire.h>
 #include <DualSonar.h>

@@ -2,6 +2,8 @@
  * DualSonar - library for using dual sonar sensor, 
  * consisting of two HC-SR04 and ATtiny85
  * See detailed info here: https://github.com/shurik179/DualSonar
+ * Created by Alexander Kirillov <shurik179@gmail.com> on March 5, 2017
+ * Version: 1.0, last updated on March 5, 2017
  */
 #ifndef DualSonar_h
 #define DualSonar_h
