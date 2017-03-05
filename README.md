@@ -36,6 +36,16 @@ In addition, connect GND pin of each sensor to GND of ATtiny85/Trinket, and Vcc 
 The sensor is done.
 
 ## Using the DualSonar sensor
-To use the sensor, install `DualSonar` library (of which this file is a part). It provides the following functions
+To use the sensor, install `DualSonar` library (of which this file is a part). It provides the class `DualSonar` with the following functions:
+
+ - `start()` - starts (activates) the sensor 
+ - `stop()` - stops the sensor
+ - `isActive()` - returns true if the sensor is active, false if it is stopped or if the sensor failed to respond
+ - `update()` - updates the sensor readings
+ - `distanceL()`, `distanceR()` - distances measured by left and right ultrasonic sensor respectively, in mm
+ 
+ While sensor is active, it continually measures distances and keeps the running average of last measurements using simple low-pass filter. Calling `update()` fetches these values from the sensor, after which they are available using `distanceL()`, `distanceR()` functions. Calling `stop()` stops the sensor, so it no longer emits pings; calling `start()` again restarts it.
+ 
+ **Note:** the values returned by `distanceL(), `distanceR()` are those fetched at latest `update()` call, so you must call `update()` frequently to make sure those values are up-to-date.  
 
 
