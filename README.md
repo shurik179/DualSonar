@@ -45,7 +45,9 @@ To use the sensor, install `DualSonar` library (of which this file is a part). I
  - `update()` - updates the sensor readings
  - `distanceL()`, `distanceR()` - distances measured by left and right ultrasonic sensor respectively, in mm
  
- While sensor is active, it continually measures distances and keeps the running average of last measurements using simple low-pass filter. Calling `update()` fetches these values from the sensor, after which they are available using `distanceL()`, `distanceR()` functions. Calling `stop()` stops the sensor, so it no longer emits pings; calling `start()` again restarts it.
+ While sensor is active, it continually measures distances and keeps the running average of last measurements using simple low-pass filter. To avoid interference, it uses one sensor at a time, alternating between the two HC-SR04 sensors; each is pinged about 20 times a second. The maximal distance is about 3.4 meters (3444 mm); distances larger than that (or when  no  echo is received) are reported as 3444 mm. 
+ 
+ Calling `update()` fetches these values from the sensor, after which they are available using `distanceL()`, `distanceR()` functions. Calling `stop()` stops the sensor, so it no longer emits pings; calling `start()` again restarts it.
  
  **Note:** the values returned by `distanceL()`, `distanceR()` are those fetched at latest `update()` call, so you must call `update()` frequently to make sure those values are up-to-date.  
 
