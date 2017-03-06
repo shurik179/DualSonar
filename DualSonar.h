@@ -11,9 +11,6 @@
 #include "Arduino.h"
 #include <Wire.h>
 
-
-
-#define I2C_DEFAULT_ADDRESS 0x11;
 #define I2C_STATUS_REG 0x01
 #define I2C_DATA_REG 0x02
 
@@ -21,15 +18,16 @@
 class DualSonar
 {
     public:
-      DualSonar(uint8_t I2C_ADDDRESS); 
-      void start();
-      void stop();
-      bool update();
-      bool isActive();
-      uint16_t distanceL();
-      uint16_t ditanceR();
+      DualSonar(byte i2c_address); 
+      void begin(void);
+      void stop(void);
+      bool update(void);
+      bool isActive(void);
+      uint16_t distanceL(void);
+      uint16_t distanceR(void);
     private:
-      uint8_t _I2C_ADDRESS;  
-      uint16_t _dLeft, _dRight;
-}
+      byte _i2c_address;  
+      uint16_t _dLeft;
+      uint16_t _dRight;
+};
 #endif

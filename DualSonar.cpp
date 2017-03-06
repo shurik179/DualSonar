@@ -2,20 +2,20 @@
 #include <Wire.h>
 #include "DualSonar.h"
 //constructor
-DualSonar::DualSonar(uint8_t I2C_ADDRESS=I2C_DEFAULT_ADDRESS)
+DualSonar::DualSonar(byte i2c_address)
 {
-    _I2C_ADDRESS=I2C_ADDRESS;
+    _i2c_address=i2c_address;
 }
-void DualSonar::start()
+void DualSonar::begin()
 {
-    Wire.beginTransmission(_I2C_ADDRESS);
+    Wire.beginTransmission(_i2c_address);
     Wire.write((byte)I2C_STATUS_REG);
     Wire.write((byte)1);
     Wire.endTransmission();
 }
 void DualSonar::stop()
 {
-    Wire.beginTransmission(_I2C_ADDRESS);
+    Wire.beginTransmission(_i2c_address);
     Wire.write((byte)I2C_STATUS_REG);
     Wire.write((byte)0);
     Wire.endTransmission();
@@ -23,11 +23,11 @@ void DualSonar::stop()
 bool DualSonar::update()
 {
     byte data[4]; //high1, low1, high2, low2
-    Wire.beginTransmission(_I2C_ADDRESS);
+    Wire.beginTransmission(_i2c_address);
     Wire.write((byte)I2C_DATA_REG);
     Wire.endTransmission();
    
-    Wire.requestFrom(_I2C_ADDRESS, 4);    // request 4 bytes from slave device
+    Wire.requestFrom(_i2c_address, (byte)4);    // request 4 bytes from slave device
     int i=0;
     while (Wire.available()&& i<4) 
     {
@@ -44,11 +44,11 @@ bool DualSonar::update()
 }
 bool DualSonar::isActive()
 {
-    Wire.beginTransmission(_I2C_ADDRESS);
+    Wire.beginTransmission(_i2c_address);
     Wire.write((byte)I2C_STATUS_REG);
     Wire.endTransmission();
    
-    Wire.requestFrom(_I2C_ADDRESS, 1);    // request 1 byte from slave device
+    Wire.requestFrom(_i2c_address, (byte)1);    // request 1 byte from slave device
     if (Wire.available() && (bool)Wire.read())
     { 
        return true;
@@ -56,12 +56,12 @@ bool DualSonar::isActive()
     else return false;
 }
 
-uint16_t distanceL()
+uint16_t DualSonar::distanceL()
 {
     return _dLeft;    
 }
 
-uint16_t distanceR()
+uint16_t DualSonar::distanceR()
 {
     return _dRight;    
 }
