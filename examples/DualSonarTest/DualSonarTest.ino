@@ -33,6 +33,8 @@ void setup()
     Wire.begin();
     Serial.begin(9600);
     Serial.println("Dual Sonar Test"); Serial.println("");
+    //give sensor time to initialize
+    delay(500);
     //start pinging
     mySonar.begin();
     //check sensor status
@@ -40,7 +42,6 @@ void setup()
     {   //all ok
         Serial.println("Sonar started");
         Serial.println("Type 's' to stop the sensor, 'r' to restart");
-        delay(500);
     } else 
     {
         Serial.println("Problem starting the sonar. Please check connections.");        
@@ -84,7 +85,7 @@ void loop()
         Serial.print(mySonar.distanceL());
         Serial.print("  Right distance (mm): ");
         Serial.println(mySonar.distanceR());
-        //delay - no point in printing the values too frequently
+        //delay - no point in printing readings more  frequently than the user can read
         //note that the sonar will continue to be taking measurements continually
         //but will only send these values to Arduino when you run update() function        
         delay(300);

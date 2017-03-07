@@ -7,18 +7,20 @@
 #define ECHO1_PIN 3 //if you change these values, also change the enabled interrupts in setup()
 #define ECHO2_PIN 4 
 #define TRIG_PIN 1 
-#define TIMEOUT 20000 //timeout waiting for return echo, in microseconds. 20000 is about 3.5 meters
-#define INTERVAL 50   //interval between conclusion of one ping and beginning of next, in ms
-uint32_t ping_emit_time = 0,                  //in microseconds
-         last_ping_time = 0;                 //time of competion of last ping, in milliseconds
-volatile uint32_t echo1_start_time = 0, echo2_start_time = 0; //in microseconds
-volatile uint16_t echo1_duration = 0, echo2_duration = 0; //in microseconds
-volatile  bool  echo1_pin_state, echo2_pin_state; //last known state of pins - for detecting changes
+#define TIMEOUT 20000 //timeout waiting for return echo, in microseconds. 20000 is about 3.44 meters
+#define INTERVAL 20   //interval between conclusion of one ping and beginning of next, in ms
+uint32_t ping_emit_time = 0,           //in microseconds
+         last_ping_time = 0;           //time of completion of last ping, in milliseconds
+volatile uint32_t echo_start_time = 0; //in microseconds
+volatile uint16_t echo_duration = 0;   // duration of returned pulse in microseconds
+volatile  bool  echo_pin_state;        //last known state of echo pin - for detecting changes
 
-uint16_t  distance1 = 0, distance2 = 0;       //measured distance, in mm. Running average of last measurements,
-//using simple low-pass filter
+uint8_t echo_pin[2]={ECHO1_PIN, ECHO2_PIN};
+uint16_t  distance[2] = {0,0};       //measured distance, in mm. Running average of last measurements,
+                                      //using simple low-pass filter
 
 volatile bool status=false; // is the sensor active?
+uint8_t active_sensor=0;      //which of the two sensors are currently using? Possible values:0,1.
 volatile uint8_t requestedRegister = 0; //requested i2c register
 bool  pinging=false;                               //are we actively pinging now?
 
@@ -31,7 +33,8 @@ void start_ping()
   digitalWrite(TRIG_PIN, LOW);
   ping_emit_time = micros();
   pinging = true;
-  echo1_pin_state = LOW; echo2_pin_state = LOW; //they must be low, we do not even need to check
+  echo_duration=0;
+  echo_pin_state = LOW;  // must be low, we do not even need to check
 }
 
 void end_ping()
@@ -39,15 +42,11 @@ void end_ping()
   //update distances
   // rule: distance =0.7* distance+0.3* new_distance;
   // new distance = echo_duration/5.8 (in mm)
-  if (echo1_duration > 100) //shorter durations are most likely result of error in readings
-    distance1 = 0.7 * distance1 + 3 * echo1_duration / 58;
-  if (echo2_duration > 100)
-    distance2 = 0.7 * distance2 + 3 * echo2_duration / 58;
-  //reset variables
+  distance[active_sensor] = 0.7 * distance[active_sensor] + 3 * echo_duration / 58;
   pinging = false;
   last_ping_time = millis();
-  echo1_duration = 0; echo2_duration = 0;
-  //digitalWrite(LED_PIN,LOW);
+  //switch active sensor
+  active_sensor=1-active_sensor;
 }
 
 // Interrupt vector for external interrupt on pin PCINT7..0
@@ -62,28 +61,17 @@ ISR(PCINT0_vect)
 {
   if (pinging)
   {
-    //detect pin state changes for echo1
-    if ((echo1_pin_state == LOW) && (digitalRead(ECHO1_PIN))) //transition low->high
+    //detect pin state changes for echo pin
+    if ((echo_pin_state == LOW) && (digitalRead(echo_pin[active_sensor]))) //transition low->high
     {
-      echo1_start_time = micros();
-      echo1_duration = 0;
-      echo1_pin_state = HIGH;
-    } else if ((echo1_pin_state == HIGH ) && (digitalRead(ECHO1_PIN) == LOW) ) //high->low
+      echo_start_time = micros();
+      echo_pin_state = HIGH;
+    } else if ((echo_pin_state == HIGH ) && (digitalRead(echo_pin[active_sensor]) == LOW) ) //high->low
     {
-      echo1_duration = micros() - echo1_start_time;
-      echo1_pin_state = LOW;
+      echo_duration = micros() - echo_start_time;
+      echo_pin_state = LOW;
     }
-    //detect pin state changes for echo2
-    if ((echo2_pin_state == LOW) && (digitalRead(ECHO2_PIN))) //transition low->high
-    {
-      echo2_start_time = micros();
-      echo2_duration = 0;
-      echo2_pin_state = HIGH;
-    } else if ((echo2_pin_state == HIGH ) && (digitalRead(ECHO2_PIN) == LOW) ) //high->low
-    {
-      echo2_duration = micros() - echo2_start_time;
-      echo2_pin_state = LOW;
-    }
+    
 
   }//end of 'if pinging'
 }
@@ -94,11 +82,12 @@ void setup()
   pinMode(ECHO1_PIN, INPUT);
   pinMode(ECHO2_PIN, INPUT);
   pinMode(TRIG_PIN, OUTPUT);
-
+  digitalWrite(TRIG_PIN,LOW);
+  delay(100);
   //enable interrupts - see https://thewanderingengineer.com/2014/08/11/pin-change-interrupts-on-attiny85/
   GIMSK |= 0b00100000;    // turns on pin change interrupts
   PCMSK |= 0b00011000;    // turn on interrupts on pin PB3, PB4
-  sei();
+  sei(); 
   //start I2C
   TinyWireS.begin(I2C_SLAVE_ADDRESS); // join i2c
   TinyWireS.onReceive(receiveEvent);
@@ -111,15 +100,13 @@ void loop()
   if (pinging)
   {
     //check timeouts for echos
-    if ( micros() - ping_emit_time > TIMEOUT )
+    if (( micros() - ping_emit_time > TIMEOUT ) || (micros() < ping_emit_time ) )  //detect rollover
     {
-      if (!echo1_duration)
-        echo1_duration = TIMEOUT;
-      if (!echo2_duration)
-        echo2_duration = TIMEOUT;
+      if (!echo_duration)
+        echo_duration = TIMEOUT;
     }
     // check if we are done
-    if ( echo1_duration && echo2_duration )
+    if ( echo_duration  )
       end_ping();
 
   } 
@@ -154,10 +141,10 @@ void requestEvent() //send previously requested register
       break;
     case 2: //requested data
       //send four bytes      
-      TinyWireS.send(highByte(distance1));
-      TinyWireS.send(lowByte(distance1));
-      TinyWireS.send(highByte(distance2));
-      TinyWireS.send(lowByte(distance2));
+      TinyWireS.send(highByte(distance[0]));
+      TinyWireS.send(lowByte(distance[0]));
+      TinyWireS.send(highByte(distance[1]));
+      TinyWireS.send(lowByte(distance[1]));
       break;
     default:
       break;
