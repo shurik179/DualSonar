@@ -62,6 +62,7 @@ By default, the DualSonar sensor uses I2C address 17 (0x11). If this conflicts w
  #define I2C_SLAVE_ADDRESS 0x11 
  ```
  and change the address to an I2C address of your choice
+ 
  2. When creating DualSonar object, provide the chosen I2C address as an argument:
  
  ```
